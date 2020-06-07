@@ -12,12 +12,18 @@ export default class RandomPlanet extends Component {
   state = {
     planet: {},
     error: false,
+    showRandomPlanet: true,
     loading: true
   };
 
-  constructor() {
-    super();
+  componentDidMount() {
+    console.log('didMount');
     this.updatePlanet();
+    this.interval = setInterval(this.updatePlanet, 10000);
+  }
+
+  componentWillUnmount() {
+    console.log('willUnmount');
   }
 
   onPlanetLoaded = (planet) => {
@@ -34,7 +40,16 @@ export default class RandomPlanet extends Component {
     })
   }
 
-  updatePlanet() {
+  onToggleRandomPlanet = () => {
+    this.setState(({ showRandomPlanet }) => {
+      return { showRandomPlanet: !showRandomPlanet }
+    });
+  }
+
+  updatePlanet = () => {
+    console.log('update');
+    if (!this.state.showRandomPlanet)
+      return false;
     const id = Math.floor(Math.random() * 18) + 1;
     this.swapiService
       .getPlanet(id)
@@ -43,7 +58,8 @@ export default class RandomPlanet extends Component {
   }
 
   render() {
-    const { planet, error, loading } = this.state;
+    console.log('render');
+    const { planet, error, loading, showRandomPlanet } = this.state;
 
     const hasData = (!loading && !error) ? true : false;
 
@@ -52,10 +68,20 @@ export default class RandomPlanet extends Component {
     const content = (hasData) ? <PlanetView planet={planet} /> : null;
 
     return (
-      <div className="random-planet jumbotron rounded">
-        {errorMsg}
-        {loader}
-        {content}
+      <div>
+        <div
+          style={(showRandomPlanet) ? { display: '' } : { display: 'none' }}
+          className="random-planet jumbotron rounded">
+          {errorMsg}
+          {loader}
+          {content}
+        </div>
+        <div className="random-planet jumbotron rounded">
+          <button
+            type="button"
+            onClick={this.onToggleRandomPlanet}
+            className="btn btn-outline-warning">Toggle random planet</button>
+        </div>
       </div>
     );
   }

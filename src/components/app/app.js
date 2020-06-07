@@ -18,7 +18,7 @@ const App = () => {
           <PersonDetails />
         </div>
       </div>
-  </div>
+    </div>
   )
 };
 
